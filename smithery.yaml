@@ -1,57 +1,78 @@
 # Smithery.ai configuration for date-and-time-mcp-server
 startCommand:
-  type: stdio
-  configSchema:
-    type: object
-    properties:
-      defaultTimezone:
-        type: string
-        title: "Default Timezone"
-        description: "Default timezone (IANA timezone identifier, e.g., UTC, America/New_York)"
-        default: "UTC"
-      defaultFormat:
-        type: string
-        title: "Default Format"
-        description: "Default date format (ISO, UNIX, RFC2822, HTTP, SQL, or a custom format string)"
-        default: "ISO"
-        enum: ["ISO", "UNIX", "RFC2822", "HTTP", "SQL"]
-      defaultLocale:
-        type: string
-        title: "Default Locale"
-        description: "Default locale for formatting (e.g., en-US, fr-FR)"
-        default: "en-US"
-      debug:
-        type: boolean
-        title: "Debug Mode"
-        description: "Enable debug logging"
-        default: false
-  commandFunction: |
-    (config) => {
-      const args = ["dist/index.js"];
-      
-      if (config.defaultTimezone) {
-        args.push("--timezone", config.defaultTimezone);
-      }
-      
-      if (config.defaultFormat) {
-        args.push("--format", config.defaultFormat);
-      }
-      
-      if (config.defaultLocale) {
-        args.push("--locale", config.defaultLocale);
-      }
-      
-      if (config.debug) {
-        args.push("--debug", String(config.debug));
-      }
-      
-      return {
-        "command": "node",
-        "args": args,
-        "env": {}
-      };
-    }
+    type: stdio
+    configSchema:
+        type: object
+        additionalProperties: false
+        properties:
+            defaultTimezone:
+                type: string
+                title: "Default Timezone"
+                description: "Default timezone (IANA timezone identifier, e.g., UTC, America/New_York)"
+                default: "UTC"
+                examples:
+                    ["UTC", "America/New_York", "Europe/London", "Asia/Tokyo"]
+            defaultFormat:
+                type: string
+                title: "Default Format"
+                description: "Default date format (ISO, UNIX, RFC2822, HTTP, SQL, or a custom format string)"
+                default: "ISO"
+                enum: ["ISO", "UNIX", "RFC2822", "HTTP", "SQL"]
+            defaultLocale:
+                type: string
+                title: "Default Locale"
+                description: "Default locale for formatting (e.g., en-US, fr-FR)"
+                default: "en-US"
+                pattern: "^[a-z]{2}(-[A-Z]{2})?$"
+                examples: ["en-US", "fr-FR", "ja-JP", "de-DE"]
+            debug:
+                type: boolean
+                title: "Debug Mode"
+                description: "Enable debug logging"
+                default: false
+    commandFunction: |
+        (config) => {
+          try {
+            const args = ["dist/index.js"];
+
+            // Add configuration options as command-line arguments
+            if (config.defaultTimezone) {
+              args.push("--timezone", config.defaultTimezone);
+            }
+
+            if (config.defaultFormat) {
+              args.push("--format", config.defaultFormat);
+            }
+
+            if (config.defaultLocale) {
+              args.push("--locale", config.defaultLocale);
+            }
+
+            if (config.debug === true) {
+              args.push("--debug", "true");
+            }
+
+            // Return the command configuration
+            return {
+              "command": "node",
+              "args": args,
+              "env": {
+                "NODE_ENV": "production"
+              }
+            };
+          } catch (error) {
+            console.error("Error in command function:", error);
+            // Fallback to basic configuration
+            return {
+              "command": "node",
+              "args": ["dist/index.js"],
+              "env": {
+                "NODE_ENV": "production"
+              }
+            };
+          }
+        }
 
 build:
-  dockerfile: Dockerfile
-  dockerBuildPath: .
+    dockerfile: Dockerfile
+    dockerBuildPath: .
