@@ -1,78 +1,70 @@
-# Smithery.ai configuration for date-and-time-mcp-server
+# Smithery configuration file: https://smithery.ai/docs/build/project-config
+
 startCommand:
-    type: stdio
-    configSchema:
-        type: object
-        additionalProperties: false
-        properties:
-            defaultTimezone:
-                type: string
-                title: "Default Timezone"
-                description: "Default timezone (IANA timezone identifier, e.g., UTC, America/New_York)"
-                default: "UTC"
-                examples:
-                    ["UTC", "America/New_York", "Europe/London", "Asia/Tokyo"]
-            defaultFormat:
-                type: string
-                title: "Default Format"
-                description: "Default date format (ISO, UNIX, RFC2822, HTTP, SQL, or a custom format string)"
-                default: "ISO"
-                enum: ["ISO", "UNIX", "RFC2822", "HTTP", "SQL"]
-            defaultLocale:
-                type: string
-                title: "Default Locale"
-                description: "Default locale for formatting (e.g., en-US, fr-FR)"
-                default: "en-US"
-                pattern: "^[a-z]{2}(-[A-Z]{2})?$"
-                examples: ["en-US", "fr-FR", "ja-JP", "de-DE"]
-            debug:
-                type: boolean
-                title: "Debug Mode"
-                description: "Enable debug logging"
-                default: false
-    commandFunction: |
-        (config) => {
-          try {
-            const args = ["dist/index.js"];
+  type: stdio
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |
+    (config) => {
+      try {
+        const args = ["dist/index.js"];
 
-            // Add configuration options as command-line arguments
-            if (config.defaultTimezone) {
-              args.push("--timezone", config.defaultTimezone);
-            }
-
-            if (config.defaultFormat) {
-              args.push("--format", config.defaultFormat);
-            }
-
-            if (config.defaultLocale) {
-              args.push("--locale", config.defaultLocale);
-            }
-
-            if (config.debug === true) {
-              args.push("--debug", "true");
-            }
-
-            // Return the command configuration
-            return {
-              "command": "node",
-              "args": args,
-              "env": {
-                "NODE_ENV": "production"
-              }
-            };
-          } catch (error) {
-            console.error("Error in command function:", error);
-            // Fallback to basic configuration
-            return {
-              "command": "node",
-              "args": ["dist/index.js"],
-              "env": {
-                "NODE_ENV": "production"
-              }
-            };
-          }
+        // Add configuration options as command-line arguments
+        if (config.defaultTimezone) {
+          args.push("--timezone", config.defaultTimezone);
         }
 
-build:
-    dockerfile: Dockerfile
-    dockerBuildPath: .
+        if (config.defaultFormat) {
+          args.push("--format", config.defaultFormat);
+        }
+
+        if (config.defaultLocale) {
+          args.push("--locale", config.defaultLocale);
+        }
+
+        if (config.debug === true) {
+          args.push("--debug", "true");
+        }
+
+        // Return the command configuration
+        return {
+          "command": "node",
+          "args": args,
+          "env": {
+            "NODE_ENV": "production"
+          }
+        };
+      } catch (error) {
+        console.error("Error in command function:", error);
+        // Fallback to basic configuration
+        return {
+          "command": "node",
+          "args": ["dist/index.js"],
+          "env": {
+            "NODE_ENV": "production"
+          }
+        };
+      }
+    }
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    properties:
+      defaultTimezone:
+        type: string
+        default: UTC
+        description: Default timezone (IANA timezone identifier, e.g., UTC,
+          America/New_York)
+      defaultFormat:
+        type: string
+        default: ISO
+        description: Default date format (ISO, UNIX, RFC2822, HTTP, SQL, or a custom
+          format string)
+      defaultLocale:
+        type: string
+        default: en-US
+        description: Default locale for formatting (e.g., en-US, fr-FR)
+      debug:
+        type: boolean
+        default: false
+        description: Enable debug logging

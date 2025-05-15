@@ -1,5 +1,7 @@
 # Date and Time MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@chirag127/date-and-time-mcp-server)](https://smithery.ai/server/@chirag127/date-and-time-mcp-server)
+
 A Model Context Protocol (MCP) server that provides current date and time information to AI agents. This server allows AI agents to access the current date and time in various formats and timezones.
 
 ## Features
@@ -11,6 +13,14 @@ A Model Context Protocol (MCP) server that provides current date and time inform
 -   Written in TypeScript with proper typing
 
 ## Installation
+
+### Installing via Smithery
+
+To install date-and-time-mcp-server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@chirag127/date-and-time-mcp-server):
+
+```bash
+npx -y @smithery/cli install @chirag127/date-and-time-mcp-server --client claude
+```
 
 ### Prerequisites
 
